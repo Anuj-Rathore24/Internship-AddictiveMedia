@@ -1,4 +1,3 @@
-function submutFunction() {}
 
 function get_text(event) {
     var country_name = event.textContent;
