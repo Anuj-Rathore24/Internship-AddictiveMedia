@@ -47,3 +47,6 @@ Internship assignment!
   For File management, used multer and for viewing and downloading file, simply used express functions.
   For database, used sequelize and freemysqlhosting.net for hosting mysql!
   Simple DOM manipulation for dynmically changing HTML.
+  
+  
+### Website->https://internship-addictivemedia.herokuapp.com/
