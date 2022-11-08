@@ -29,11 +29,11 @@ app.set("view engine", "html");
 
 //Using Sequelize as Object Relational Mapper
 const sequelize = new Sequelize(
-  "internship",
-  `${creds.sql.user}`,
-  `${creds.sql.password}`,
+  creds.newCreds.Name,
+  `${creds.newCreds.Username}`,
+  `${creds.newCreds.Password}`,
   {
-    host: `${creds.sql.host}`,
+    host: `${creds.newCreds.host}`,
     dialect: "mysql",
   }
 );
