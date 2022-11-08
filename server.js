@@ -1,10 +1,11 @@
 var express = require("express");
 const path = require("path");
 const { urlencoded } = express;
+const fs = require("fs");
 const Sequelize = require("sequelize");
 const countryList = require("./static/countries.json");
 var creds = require("./creds.json");
-let cookieParser = require('cookie-parser');
+let cookieParser = require("cookie-parser");
 
 //for file management
 const multer = require("multer");
@@ -46,8 +47,7 @@ sequelize
     console.error("Unable to connect to the database: ", error);
   });
 
-
-//creating table(if it exists no action will be performed) 
+//creating table(if it exists no action will be performed)
 const userTable = sequelize.define("userResume", {
   userName: Sequelize.DataTypes.STRING,
   country: Sequelize.DataTypes.STRING,
@@ -99,27 +99,49 @@ app.post("/uploadFile", upload.single("getResume"), (req, res) => {
 });
 
 // Download/View Document
-app.post("/document/download",(req,res)=>{
-    res.download(`./static/${req.cookies.FileName}`, (err)=>console.log("Error-:"+err));
-})
-app.post("/document/view",(req,res)=>{
-    res.sendFile(__dirname+`/static/${req.cookies.FileName}`, (err)=>console.log("Error-:"+err));
-})
+app.post("/document/download", (req, res) => {
+  res.download(`./static/${req.cookies.FileName}`, (err) =>
+    console.log("Error-:" + err)
+  );
+  res.clearCookie("FileName");
+});
+app.post("/document/view", (req, res) => {
+  res.sendFile(__dirname + `/static/${req.cookies.FileName}`, (err) =>
+    console.log("Error-:" + err)
+  );
+  res.clearCookie("FileName");
+});
 
 //get Responses data from database
 app.post("/getResponsesData", (req, res) => {
-    //sorting using Name then Date
-    userTable
+  
+    //sorting using Name or Date
+  var orderVar="userName";
+  if(!req.body.sName){
+    orderVar="Date"
+  }
+  userTable
     .findAll({
-      attributes: ["userName", "country","Date","FileName"],
-      order: [["userName",`${req.body.sname}`],["date",`${req.body.sdate}`]],
+      attributes: ["userName", "country", "Date", "FileName"],
+      order: [
+        [orderVar],
+      ],
     })
     .then(function (result) {
       res.send(result);
     });
 });
 
-
+app.get("/deleteRecords", async (req, res) => {
+  const file = req.cookies.FileName;
+  console.log("File->"+file);
+  fs.unlinkSync(__dirname+`/static/${file}`);
+  userTable.destroy({
+    where: { FileName: file },
+  });
+  res.clearCookie("FileName");
+  res.end();
+});
 app.listen(port, () => console.log("The application has started successfully"));
 
 async function insertIntoTable(name, coun, Date, FileN) {

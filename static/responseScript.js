@@ -1,10 +1,9 @@
+//Api to get all the Responses from backend
 async function getRespones(e) {
   e.preventDefault();
   const url = "/getResponsesData";
-
   const data = {
-    sname: e.target.Nsort.value,
-    sdate: e.target.Dsort.value,
+    sName: e.target.Name.checked,
   };
 
   const response = await fetch(url, {
@@ -22,31 +21,40 @@ async function getRespones(e) {
   });
 }
 
+
+//For Creating widgets
 function createTemplate(list){
+
+    //empty container before adding widgets
     var container=document.getElementById("listContainer");
     container.innerHTML="";
+
+    //For iterating over all the records from database
     for(var i=0;i<list.length;i++){
         var subContainer=document.createElement("div");
         subContainer.className="SubContainer";
 
-
+        //Name Para
         var namePara=document.createElement("p");
         namePara.innerHTML=list[i].userName;
         subContainer.append(namePara);
         
+        //Date Para
         var datePara=document.createElement("p");
         datePara.innerHTML=list[i].Date;
         subContainer.append(datePara);
         
+        //country Para
         var countryPara=document.createElement("p");
         countryPara.innerHTML=list[i].country;
         subContainer.append(countryPara);
-
+        
+        //First Form for viewing PDFs
         var form1=document.createElement("form")
         form1.action="/document/view";
         form1.method="post";
         var viewButton=document.createElement("input");
-        viewButton.innerHTML="View Resume";
+        viewButton.value="View Resume";
         viewButton.type="submit";
         viewButton.onclick=(e)=>{
             document.cookie=`FileName=${e.target.id}`;
@@ -55,12 +63,13 @@ function createTemplate(list){
         form1.append(viewButton);
         subContainer.append(form1);
         
+        //second Form for Downloading PDFs
         var form2=document.createElement("form")
         form2.action="/document/download";
         form2.method="post";
         var downloadButton=document.createElement("input");
         downloadButton.type="submit";
-        downloadButton.innerHTML="Download Resume";
+        downloadButton.value="Download Resume";
         downloadButton.onclick=(e)=>{
             document.cookie=`FileName=${e.target.id}`;
         }
@@ -68,8 +77,22 @@ function createTemplate(list){
         form2.append(downloadButton);
         subContainer.append(form2);
         
+
+        //Button for deleting a Record!
         var deleteButton=document.createElement("button");
+        deleteButton.id=list[i].FileName;
         deleteButton.innerHTML="Delete Record";
+        deleteButton.onclick=(e)=>{
+            document.cookie=`FileName=${e.target.id}`;
+            const url="/deleteRecords";
+            fetch(url, {
+                method: "GET",
+                mode: "cors",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+        }
         subContainer.append(deleteButton);
 
         container.append(subContainer);
