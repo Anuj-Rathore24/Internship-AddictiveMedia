@@ -43,6 +43,15 @@ sequelize
     console.error("Unable to connect to the database: ", error);
   });
 
+
+//creating table(if it exists no action will be performed) 
+const userTable = sequelize.define("userResume", {
+  userName: Sequelize.DataTypes.STRING,
+  country: Sequelize.DataTypes.STRING,
+  Date: Sequelize.DataTypes.DATE,
+  FileName: Sequelize.DataTypes.STRING,
+});
+
 //  Configuration for Multer
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -50,7 +59,11 @@ const multerStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    cb(null, `resume/${file.fieldname}-${Date.now()}.${ext}`);
+    const FileName = `resume/${req.body.Name}-${Date.now()}.${ext}`;
+
+    //call function to insert values to our database
+    insertIntoTable(req.body.Name, req.body.country, req.body.date, FileName);
+    cb(null, FileName);
   },
 });
 const upload = multer({
@@ -60,6 +73,9 @@ const upload = multer({
 //To Serve HTML Files
 app.get("/", (req, res) => {
   res.status(200).render("form");
+});
+app.get("/response", (req, res) => {
+  res.status(200).render("response");
 });
 
 //To get Data for autocomplete
@@ -73,15 +89,50 @@ app.get("/get_data", function (req, res, next) {
   res.send(listObjects);
 });
 
-//endpoint for getting files from user
+//Endpoint for getting files from user
 
-app.post("/api/uploadFile", upload.single("getResume"), (req, res) => {
+app.post("/uploadFile", upload.single("getResume"), (req, res) => {
   console.log(req.file);
   res.status(200).render("form");
-    //Download PDF File
+});
+//Download PDF File
 //   res.download("./static/resume/getResume-1667844707323.pdf", (err)=>console.log("Error-:"+err));
-    //View Pdf File
-    res.sendFile(__dirname+"/static/resume/getResume-1667844707323.pdf");
+//View Pdf File
+// res.sendFile(__dirname+"/static/resume/getResume-1667844707323.pdf");
+
+app.post("/document/view",(req,res)=>{
+    console.log(req.body.file);
+    // res.sendFile(__dirname+`/static/${req.body.file}`);
+})
+app.post("/document/download",(req,res)=>{
+    console.log(req.body.file);
+    // res.download(`./static/resume/${req.body.file}`, (err)=>console.log("Error-:"+err));
+
+})
+
+
+//get Responses data from database
+app.post("/getResponsesData", (req, res) => {
+    //sorting using Name then Date
+    userTable
+    .findAll({
+      attributes: ["userName", "country","Date","FileName"],
+      order: [["userName",`${req.body.sname}`],["date",`${req.body.sdate}`]],
+    })
+    .then(function (result) {
+      res.send(result);
+    });
 });
 
+
 app.listen(port, () => console.log("The application has started successfully"));
+
+async function insertIntoTable(name, coun, Date, FileN) {
+  await userTable.sync();
+  userTable.create({
+    userName: name,
+    country: coun,
+    Date: Date,
+    FileName: FileN,
+  });
+}

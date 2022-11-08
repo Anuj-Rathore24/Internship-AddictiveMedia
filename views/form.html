@@ -9,13 +9,14 @@
     <script src="../static/script.js"></script>
   </head>
   <body>
-    <form action="/api/uploadFile" enctype="multipart/form-data" method="post">
+    <form action="/uploadFile" enctype="multipart/form-data" method="post">
       <input type="text" name="Name" id="NameText" placeholder="Enter Name" />
       <input type="date" name="date" id="DateInput" />
       <input
       type="text"
       id="autocomplete_search"
       placeholder="Type Country Name Here"
+      name="country"
       />
       <span id="search_result"></span>
       
