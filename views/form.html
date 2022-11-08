@@ -5,23 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/style.css" />
     <script src="../static/script.js"></script>
   </head>
   <body>
-    <form action="/uploadFile" enctype="multipart/form-data" method="post">
-      <input type="text" name="Name" id="NameText" placeholder="Enter Name" />
-      <input type="date" name="date" id="DateInput" />
-      <input
-      type="text"
-      id="autocomplete_search"
-      placeholder="Type Country Name Here"
-      name="country"
-      />
-      <span id="search_result"></span>
-      
-      <input type="file" name="getResume" id="getResume" />
-      <input type="submit" value="Submit" />
-    </form>
+    <div id="root">
+      <form action="/uploadFile" enctype="multipart/form-data" method="post" class="formStyleClass">
+        <input type="text" name="Name" id="NameText" placeholder="Enter Name" />
+        <input type="date" name="date" id="DateInput" />
+        <input
+        type="text"
+        id="autocomplete_search"
+        placeholder="Type Country Name Here"
+        name="country"
+        />
+        <div id="autocomleteDiv">
+        <span id="search_result"></span>
+        </div>
+        <input type="file" name="getResume" id="getResume" />
+        <input type="submit" value="Submit" />
+      </form>
+      <a href="/response">See Response</a>
+    </div>
+
   </body>
 </html>

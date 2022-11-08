@@ -28,7 +28,7 @@ function createTemplate(list){
     //empty container before adding widgets
     var container=document.getElementById("listContainer");
     container.innerHTML="";
-
+    
     //For iterating over all the records from database
     for(var i=0;i<list.length;i++){
         var subContainer=document.createElement("div");
@@ -95,6 +95,14 @@ function createTemplate(list){
         }
         subContainer.append(deleteButton);
 
+        container.append(subContainer);
+    }
+
+    if(list.length==0){
+        var subContainer=document.createElement("div");
+        subContainer.className="SubContainer";
+
+        subContainer.innerHTML="<h3>No Entries!</h3>"
         container.append(subContainer);
     }
 }

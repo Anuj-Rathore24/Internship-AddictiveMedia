@@ -1,8 +1,7 @@
 var express = require("express");
 const path = require("path");
 const { urlencoded } = express;
-const fs = require("fs");
-const Sequelize = require("sequelize");
+const {insertIntoTable,deleteR,getRespones}=require("./database.js")
 const countryList = require("./static/countries.json");
 var creds = require("./creds.json");
 let cookieParser = require("cookie-parser");
@@ -27,33 +26,6 @@ app.set("views", path.join(path.dirname(""), "/views")); //for serving templates
 app.engine("html", engine.mustache);
 app.set("view engine", "html");
 
-//Using Sequelize as Object Relational Mapper
-const sequelize = new Sequelize(
-  creds.newCreds.Name,
-  `${creds.newCreds.Username}`,
-  `${creds.newCreds.Password}`,
-  {
-    host: `${creds.newCreds.host}`,
-    dialect: "mysql",
-  }
-);
-
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection has been established successfully.");
-  })
-  .catch((error) => {
-    console.error("Unable to connect to the database: ", error);
-  });
-
-//creating table(if it exists no action will be performed)
-const userTable = sequelize.define("userResume", {
-  userName: Sequelize.DataTypes.STRING,
-  country: Sequelize.DataTypes.STRING,
-  Date: Sequelize.DataTypes.DATE,
-  FileName: Sequelize.DataTypes.STRING,
-});
 
 //  Configuration for Multer
 const multerStorage = multer.diskStorage({
@@ -85,16 +57,15 @@ app.get("/response", (req, res) => {
 app.get("/get_data", function (req, res, next) {
   var listObjects = [];
   var search_query = req.query.search_query;
-  console.log(search_query);
   countryList.countries.forEach((item) => {
     if (item.name.includes(search_query)) listObjects.push(item);
   });
   res.send(listObjects);
 });
 
+
 //Endpoint for getting files from user
 app.post("/uploadFile", upload.single("getResume"), (req, res) => {
-  console.log(req.file);
   res.status(200).render("form");
 });
 
@@ -112,44 +83,14 @@ app.post("/document/view", (req, res) => {
   res.clearCookie("FileName");
 });
 
-//get Responses data from database
-app.post("/getResponsesData", (req, res) => {
-  
-    //sorting using Name or Date
-  var orderVar="userName";
-  if(!req.body.sName){
-    orderVar="Date"
-  }
-  userTable
-    .findAll({
-      attributes: ["userName", "country", "Date", "FileName"],
-      order: [
-        [orderVar],
-      ],
-    })
-    .then(function (result) {
-      res.send(result);
-    });
-});
 
-app.get("/deleteRecords", async (req, res) => {
-  const file = req.cookies.FileName;
-  console.log("File->"+file);
-  fs.unlinkSync(__dirname+`/static/${file}`);
-  userTable.destroy({
-    where: { FileName: file },
-  });
-  res.clearCookie("FileName");
-  res.end();
-});
+//get Responses data from database
+app.post("/getResponsesData", (req, res) => getRespones(req,res));
+
+//endPoint for deleting records
+app.get("/deleteRecords", async (req, res) => deleteR(req,res));
+
+
 app.listen(port, () => console.log("The application has started successfully"));
 
-async function insertIntoTable(name, coun, Date, FileN) {
-  await userTable.sync();
-  userTable.create({
-    userName: name,
-    country: coun,
-    Date: Date,
-    FileName: FileN,
-  });
-}
+

@@ -1,29 +1,52 @@
-html, body{
-    height: 100%;
+html,
+body,
+#root {
+  height: 100%;
 }
-#maincontainer{
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
+#maincontainer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
-#listContainer{
-    width: 50vw;
+#listContainer {
+  margin: 20px;
+  border: 1px solid black;
+  width: 50vw;
+  padding: 20px;
 }
-input{
-    padding: 0.5vw;
+#autocomleteDiv{
+    overflow: scroll;
+    height: 30vh;
+}
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+input {
+  padding: 0.5vw;
 }
 
-li:hover, input:hover{
-    cursor: pointer;
+li:hover,
+input:hover {
+  cursor: pointer;
 }
-.SubContainer{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+.SubContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 }
 
-button:hover{
-    cursor: pointer;
+button:hover {
+  cursor: pointer;
+}
+
+.formStyleClass{
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 20px;
 }
