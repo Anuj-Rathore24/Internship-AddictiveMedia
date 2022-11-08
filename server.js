@@ -12,7 +12,7 @@ const multer = require("multer");
 
 const engine = require("consolidate");
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 var cors = require("cors");
 
 // middlewares
