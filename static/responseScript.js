@@ -28,6 +28,8 @@ function createTemplate(list){
     for(var i=0;i<list.length;i++){
         var subContainer=document.createElement("div");
         subContainer.className="SubContainer";
+
+
         var namePara=document.createElement("p");
         namePara.innerHTML=list[i].userName;
         subContainer.append(namePara);
@@ -40,42 +42,38 @@ function createTemplate(list){
         countryPara.innerHTML=list[i].country;
         subContainer.append(countryPara);
 
-        var viewButton=document.createElement("button");
+        var form1=document.createElement("form")
+        form1.action="/document/view";
+        form1.method="post";
+        var viewButton=document.createElement("input");
         viewButton.innerHTML="View Resume";
+        viewButton.type="submit";
+        viewButton.onclick=(e)=>{
+            document.cookie=`FileName=${e.target.id}`;
+        }
         viewButton.id=list[i].FileName;
-        viewButton.onclick=(e)=>viewFunction(e.target.id);
-        subContainer.append(viewButton);
+        form1.append(viewButton);
+        subContainer.append(form1);
         
-        var downloadButton=document.createElement("button");
+        var form2=document.createElement("form")
+        form2.action="/document/download";
+        form2.method="post";
+        var downloadButton=document.createElement("input");
+        downloadButton.type="submit";
         downloadButton.innerHTML="Download Resume";
+        downloadButton.onclick=(e)=>{
+            document.cookie=`FileName=${e.target.id}`;
+        }
         downloadButton.id=list[i].FileName;
-        downloadButton.onclick=(e)=>downloadFunction(e.target.id);
-        subContainer.append(downloadButton);
+        form2.append(downloadButton);
+        subContainer.append(form2);
+        
+        var deleteButton=document.createElement("button");
+        deleteButton.innerHTML="Delete Record";
+        subContainer.append(deleteButton);
 
         container.append(subContainer);
     }
 }
 
 
-async function viewFunction(FileName){
-    const url="/document/view"
-    await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({file:FileName}),
-    });
-}
-async function downloadFunction(FileName){
-    const url="/document/download"
-    await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({file:FileName}),
-      });
-}

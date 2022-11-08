@@ -4,6 +4,8 @@ const { urlencoded } = express;
 const Sequelize = require("sequelize");
 const countryList = require("./static/countries.json");
 var creds = require("./creds.json");
+let cookieParser = require('cookie-parser');
+
 //for file management
 const multer = require("multer");
 
@@ -15,6 +17,7 @@ var cors = require("cors");
 // middlewares
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 app.use("/static", express.static("static")); //for serving static files
 app.use(express.static(path.join(__dirname, "public")));
 app.use(urlencoded());
@@ -90,26 +93,18 @@ app.get("/get_data", function (req, res, next) {
 });
 
 //Endpoint for getting files from user
-
 app.post("/uploadFile", upload.single("getResume"), (req, res) => {
   console.log(req.file);
   res.status(200).render("form");
 });
-//Download PDF File
-//   res.download("./static/resume/getResume-1667844707323.pdf", (err)=>console.log("Error-:"+err));
-//View Pdf File
-// res.sendFile(__dirname+"/static/resume/getResume-1667844707323.pdf");
 
-app.post("/document/view",(req,res)=>{
-    console.log(req.body.file);
-    // res.sendFile(__dirname+`/static/${req.body.file}`);
-})
+// Download/View Document
 app.post("/document/download",(req,res)=>{
-    console.log(req.body.file);
-    // res.download(`./static/resume/${req.body.file}`, (err)=>console.log("Error-:"+err));
-
+    res.download(`./static/${req.cookies.FileName}`, (err)=>console.log("Error-:"+err));
 })
-
+app.post("/document/view",(req,res)=>{
+    res.sendFile(__dirname+`/static/${req.cookies.FileName}`, (err)=>console.log("Error-:"+err));
+})
 
 //get Responses data from database
 app.post("/getResponsesData", (req, res) => {
